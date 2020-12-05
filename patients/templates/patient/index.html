@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}All Patients{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-md-12">
+
+    <a class="btn btn-success" href="{{ url_for('patient.create') }}">New Patient</a>
+
+    <ul>
+        {% for patient in patients %}
+        <li>
+            <a href="{{ url_for('patient.edit', pk=patient.id) }}">{{patient.name}}</a>
+            - {{patient.phone}}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

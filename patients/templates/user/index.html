@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}All Users{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<a class="btn btn-success" href="{{ url_for('user.create') }}">New User</a>
+
+<ul>
+    {% for user in users %}
+    <li>
+        <a href="{{ url_for('user.edit', username=user.username) }}">{{user.username}}</a>
+        - {{user.created_at}}
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
