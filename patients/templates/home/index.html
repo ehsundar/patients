@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Home{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<ul>
+    {% for page in pages %}
+    <li>
+        <a href="{{ page.url }}">{{page.name}}</a>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
