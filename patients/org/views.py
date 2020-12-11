@@ -1,11 +1,12 @@
 import functools
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, abort
 )
-from werkzeug.security import check_password_hash, generate_password_hash
 
 from patients.db import get_db
+from .forms import OrgCreateForm
+
 
 bp = Blueprint('org', __name__, url_prefix='/org')
 
@@ -22,39 +23,31 @@ def index():
 
 @bp.route('/create', methods=('GET', 'POST'))
 def create():
+    form = OrgCreateForm(request.form)
+
     if request.method == 'POST':
         db = get_db()
-        err = None
 
-        slug = request.form['slug']
-        if not slug:
-            err = 'Slug is requiered'
+        if form.validate():
+            org = db.execute(
+                'SELECT * FROM org WHERE slug=?',
+                (form.slug.data,),
+            ).fetchone()
 
-        name = request.form['name']
-        if not name:
-            err = 'Name is requiered'
+            if org:
+                form.slug.errors.append(f'org {form.slug.data} already exists')
+            else:
+                db.execute(
+                    'INSERT INTO org (slug, name) VALUES (?, ?)',
+                    (form.slug.data, form.name.data),
+                )
+                db.commit()
+                return redirect(url_for('org.index'))
 
-        org = db.execute(
-            'SELECT * FROM org WHERE slug=?',
-            (slug,),
-        ).fetchone()
-        if org:
-            err = f'Org {slug} already exists'
-        else:
-            db.execute(
-                'INSERT INTO org (slug, name) VALUES (?, ?)',
-                (slug, name),
-            )
-            db.commit()
-
-        if err:
-            flash(err)
-        return redirect(url_for('org.index'))
-
-    return render_template('org/create.html')
+    return render_template('org/create.html', form=form)
 
 
-@bp.route('/edit/<slug>', methods=('GET',))
+@bp.route('/edit/<slug>', methods=('GET', 'POST'))
 def edit(slug: str):
     db = get_db()
 
@@ -62,26 +55,25 @@ def edit(slug: str):
         'SELECT * FROM org WHERE slug=?',
         (slug,),
     ).fetchone()
-    return render_template('org/edit.html', org=org)
-
-
-@bp.route('/edit/<slug>', methods=('POST',))
-def edit_post(slug: str):
-    db = get_db()
-    err = None
-
-    org = db.execute(
-        'SELECT * FROM org WHERE slug=?',
-        (slug,),
-    ).fetchone()
     if not org:
-        err = f'Org {slug} does not exists'
+        abort(404)
 
-    name = request.form['name']
-    db.execute(
-        'UPDATE org SET name=? WHERE slug=?',
-        (name, slug),
-    )
+    if request.method == 'POST':
+        form = OrgCreateForm(request.form)
 
-    flash(err)
-    return redirect(url_for('org.edit', slug=slug))
+        if form.validate():
+            db.execute(
+                'UPDATE org SET name=? WHERE slug=?',
+                (form.name.data, slug),
+            )
+            db.commit()
+            return redirect(url_for('org.index'))
+
+        return render_template('org/edit.html', form=form)
+    
+    if request.method == 'GET':
+        form = OrgCreateForm()
+        form.slug.data = org['slug']
+        form.name.data = org['name']
+
+        return render_template('org/edit.html', form=form)
