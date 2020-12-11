@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% from "formhelpers.html" import render_field %}
+{% from "formhelpers.html" import render_field_readonly %}
 
 
 {% block header %}
@@ -12,7 +13,7 @@
     <div class="col">
         <form method="POST">
             {{ form.hidden_tag() }}
-            {{ render_field(form.slug) }}
+            {{ render_field_readonly(form.slug) }}
             {{ render_field(form.name) }}
             <input type="submit" class="btn btn-primary" value="Create">
         </form>

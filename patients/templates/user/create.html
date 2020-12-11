@@ -1,28 +1,23 @@
 {% extends 'base.html' %}
 
+{% from "formhelpers.html" import render_field %}
+
+
 {% block header %}
 <h1>{% block title %}Create User{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<form method="post" autocomplete="false">
-    <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" class="form-control" id="username" name="username">
+<div class="row">
+    <div class="col">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ render_field(form.username) }}
+            {{ render_field(form.password) }}
+            {{ render_field(form.org) }}
+            {{ render_field(form.perms) }}
+            <input type="submit" class="btn btn-primary" value="Create">
+        </form>
     </div>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" class="form-control" id="password" name="password">
-    </div>
-    <div class="form-group">
-        <label for="org">Org</label>
-        <select class="form-control" id="org" name="org">
-            {% for org in orgs %}
-            <option>{{ org.slug }} - {{ org.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <input type="submit" class="btn btn-success" value="Create">
-</form>
+</div>
 {% endblock %}

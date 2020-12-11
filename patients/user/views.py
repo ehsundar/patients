@@ -1,11 +1,14 @@
 import functools
+from sqlite3 import Connection
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, abort
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from patients.db import get_db
+from .forms import CreateUserForm
+
 
 bp = Blueprint('user', __name__, url_prefix='/user')
 
@@ -23,45 +26,41 @@ def index():
 @bp.route('/create', methods=('GET',))
 def create():
     db = get_db()
-    orgs = db.execute(
-        'SELECT * FROM org',
-    ).fetchall()
-    perms = db.execute(
-        'SELECT * FROM perm',
-    ).fetchall()
-    return render_template('user/create.html', orgs=orgs, perms=perms)
+    form = CreateUserForm()
+
+    fill_form_org_and_perms(db, form)
+
+    return render_template('user/create.html', form=form)
 
 
 @bp.route('/create', methods=('POST',))
 def create_post():
     db = get_db()
-    err = None
+    form = CreateUserForm(request.form)
 
-    username = request.form['username']
-    if not username:
-        err = 'Username is requiered'
+    fill_form_org_and_perms(db, form)
 
-    password = request.form['password']
-    if not password:
-        err = 'Password is requiered'
+    if form.validate():
+        user = db.execute(
+            'SELECT * FROM user WHERE username=?',
+            (form.username.data,)
+        ).fetchone()
+        if user:
+            form.username.errors.append(
+                f'Username {form.username.data} already exists')
+            return render_template('user/create.html', form=form)
 
-    user = db.execute(
-        'SELECT * FROM user WHERE username=?',
-        (username,)
-    ).fetchone()
-    if user:
-        err = f'User {username} already exists'
-
-    if not err:
         db.execute(
-            'INSERT INTO user (username, password) VALUES (?, ?)',
-            (username, generate_password_hash(password))
+            'INSERT INTO user (username, password, org) VALUES (?, ?, ?)',
+            (form.username.data, generate_password_hash(
+                form.password.data), form.org.data)
         )
         db.commit()
+
+        flash('User created')
         return redirect(url_for('user.index'))
 
-    flash(err)
-    return redirect(url_for('user.index'))
+    return render_template('user/create.html', form=form)
 
 
 @bp.route('/<username>', methods=('GET',))
@@ -72,18 +71,18 @@ def edit(username: str):
         (username,)
     ).fetchone()
     if not user:
-        err = f'User {username} already exists'
-        flash(err)
-        return redirect(url_for('user.index'))
+        abort(404)
 
-    orgs = db.execute(
-        'SELECT * FROM org',
-    ).fetchall()
-    perms = db.execute(
-        'SELECT * FROM perm',
-    ).fetchall()
+    form = CreateUserForm(request.form)
+    fill_form_org_and_perms(db, form)
 
-    return render_template('user/edit.html', user=user, orgs=orgs, perms=perms)
+    form.username.data = user['username']
+    form.password.data = '*' * 8
+    form.org.data = user['org']
+    form.org.default = user['org']
+    form.perms.default = []
+
+    return render_template('user/edit.html', form=form)
 
 
 @bp.route('/<username>', methods=('POST',))
@@ -107,3 +106,21 @@ def edit_post(username: str):
 
     flash(err)
     return redirect(url_for('user.index'))
+
+
+def fill_form_org_and_perms(db: Connection, form: CreateUserForm):
+    orgs = db.execute(
+        'SELECT * FROM org',
+    ).fetchall()
+    perms = db.execute(
+        'SELECT * FROM perm',
+    ).fetchall()
+
+    orgs_list = list(
+        map(lambda o: (o['slug'], o['slug'] + ' - ' + o['name']), orgs))
+    form.org.choices = orgs_list
+
+    perms_list = list(
+        map(lambda o: (o['slug'], o['slug'] + ' - ' + o['name']), perms)
+    )
+    form.perms.choices = perms_list

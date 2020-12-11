@@ -11,5 +11,19 @@
     </ul>
     {% endif %}
 </div>
+{% endmacro %}
 
+{% macro render_field_readonly(field) %}
+<div class="form-group">
+    <label for="{{ field.id }}">{{ field.label }}</label>
+    {{ field(class="form-control", readonly=true, **kwargs)|safe }}
+
+    {% if field.errors %}
+    <ul style="color: red;">
+        {% for error in field.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
 {% endmacro %}
