@@ -1,25 +1,19 @@
-import sqlite3
-
 import click
+import psycopg2
 from flask import current_app, g
 from flask.cli import with_appcontext
 
 
-def get_db() -> sqlite3.Connection:
+def get_db():
     if 'db' not in g:
-        g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        g.db.row_factory = sqlite3.Row
-
+        conn = psycopg2.connect(host='localhost', database='patients', user='postgres', password='testpass')
+        g.db = conn
     return g.db
 
 
 def close_db(e=None):
     db = g.pop('db', None)
-
-    if db is not None:
+    if db:
         db.close()
 
 
@@ -33,11 +27,15 @@ def init_app(app):
 def init_db_command():
     """Clear the existing data and create new tables."""
     db = get_db()
+    cur = db.cursor()
 
     with current_app.open_resource('schema.sql') as f:
-        db.executescript(f.read().decode())
+        cur.execute(f.read().decode())
 
     with current_app.open_resource('preset.sql') as f:
-        db.executescript(f.read().decode())
+        cur.execute(f.read().decode())
+
+    db.commit()
+    cur.close()
 
     click.echo('Initialized the database.')
