@@ -1,2 +1,2 @@
-from .auth import bp
-from .auth import login_required
+from .views import bp
+from .views import login_required

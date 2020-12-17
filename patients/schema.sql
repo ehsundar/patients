@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS perm;
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS perm_linker;
 DROP TABLE IF EXISTS patient;
+DROP TABLE IF EXISTS res;
 DROP TABLE IF EXISTS report;
 
 CREATE TABLE org (
@@ -47,9 +48,16 @@ CREATE TABLE patient (
   name VARCHAR(32),
   gender VARCHAR(32),
 
-  creator_user VARCHAR(32),  
+  creator_user VARCHAR(32),
   FOREIGN KEY (creator_user) REFERENCES user (username)
 );
+
+CREATE TABLE res (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    start
+)
 
 CREATE TABLE report (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
