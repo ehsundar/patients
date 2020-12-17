@@ -3,6 +3,8 @@ import psycopg2
 from flask import current_app, g
 from flask.cli import with_appcontext
 
+from patients.commands import create_user_command
+
 
 def get_db():
     if 'db' not in g:
@@ -20,6 +22,7 @@ def close_db(e=None):
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+    app.cli.add_command(create_user_command)
 
 
 @click.command('init-db')

@@ -7,7 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from patients.db import get_db
 from .forms import LoginForm
-
+from ..row_trans import Model, User
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -16,25 +16,29 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def login():
     if request.method == 'POST':
         db = get_db()
+        cur = db.cursor()
         form = LoginForm(request.form)
 
         if not form.validate():
             return render_template('auth/login.html', form=form)
-        
-        user = db.execute(
-            'SELECT * FROM user WHERE username = ?', (form.username.data,)
-        ).fetchone()
+
+        cur.execute(
+            'SELECT * FROM users WHERE username = %s',
+            (form.username.data,)
+        )
+        user = cur.fetchone()
+        user = Model(User, user)
 
         if not user:
             form.username.errors.append('invalid login')
             return render_template('auth/login.html', form=form)
 
-        if not check_password_hash(user['password'], form.password.data):
+        if not check_password_hash(user.password, form.password.data):
             form.password.errors.append('invalid login')
             return render_template('auth/login.html', form=form)
 
         session.clear()
-        session['username'] = user['username']
+        session['username'] = user.username
         return redirect(url_for('home.index'))
 
     return render_template('auth/login.html', form=LoginForm())
@@ -47,9 +51,13 @@ def load_logged_in_user():
     if username is None:
         g.user = None
     else:
-        g.user = get_db().execute(
-            'SELECT * FROM user WHERE username = ?', (username,)
-        ).fetchone()
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(
+            'SELECT * FROM users WHERE username = %s', (username,)
+        )
+        g.user = cur.fetchone()
+        cur.close()
 
 
 @bp.route('/logout')

@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired, Length, Regexp
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[
         DataRequired(),
-        Length(min=6, max=32),
+        Length(min=5, max=32),
     ])
     password = PasswordField('Password', validators=[
         DataRequired(),
