@@ -13,6 +13,15 @@ Org = [
     'name',
 ]
 
+Patient = [
+    'id',
+    'created_at',
+    'phone',
+    'name',
+    'gender',
+    'creator_user',
+]
+
 
 class Model:
     def __init__(self, mapper: List, row: Tuple[Any]):

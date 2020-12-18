@@ -1,9 +1,9 @@
 import functools
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, g, redirect, render_template, request, session, url_for
 )
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash
 
 from patients.db import get_db
 from .forms import LoginForm
@@ -56,7 +56,8 @@ def load_logged_in_user():
         cur.execute(
             'SELECT * FROM users WHERE username = %s', (username,)
         )
-        g.user = cur.fetchone()
+        user = Model(User, cur.fetchone())
+        g.user = user
         cur.close()
 
 
