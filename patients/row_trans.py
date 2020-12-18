@@ -7,6 +7,12 @@ User = [
     'org',
 ]
 
+Org = [
+    'slug',
+    'created_at',
+    'name',
+]
+
 
 class Model:
     def __init__(self, mapper: List, row: Tuple[Any]):
