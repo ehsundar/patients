@@ -42,4 +42,7 @@ def create_app(test_config=None):
     from . import patient
     app.register_blueprint(patient.bp)
 
+    from . import report
+    app.register_blueprint(report.bp)
+
     return app

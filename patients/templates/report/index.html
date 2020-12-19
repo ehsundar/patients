@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}All Reports{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <div class="col-md-12">
+        <a class="btn btn-success" href="{{ url_for('report.create') }}">New Report</a>
+        <ul>
+            {% for report in reports %}
+                <li>
+                    <a href="{{ url_for('report.edit', pk=report.id) }}">{{ report.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}

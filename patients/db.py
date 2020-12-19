@@ -1,5 +1,6 @@
 import click
 import psycopg2
+import psycopg2.extras
 from flask import current_app, g
 from flask.cli import with_appcontext
 
@@ -8,7 +9,8 @@ from patients.commands import create_user_command
 
 def get_db():
     if 'db' not in g:
-        conn = psycopg2.connect(host='localhost', database='patients', user='postgres', password='testpass')
+        conn = psycopg2.connect(host='localhost', database='patients', user='postgres', password='testpass',
+                                cursor_factory=psycopg2.extras.NamedTupleCursor)
         g.db = conn
     return g.db
 

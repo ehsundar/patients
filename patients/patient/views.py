@@ -38,6 +38,7 @@ def create():
             (form.phone.data, form.name.data, form.gender.data, g.user.username),
         )
         db.commit()
+        cur.close()
         return redirect(url_for('patient.index'))
 
     cur.close()
