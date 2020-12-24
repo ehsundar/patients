@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import (
     Blueprint, g, redirect, render_template, request, url_for, abort
 )
@@ -29,12 +31,14 @@ def create():
     db = get_db()
     cur = db.cursor()
     form = CreateReportForm(request.form)
-    fill_form_patients(form)
+    fill_form_choices(form)
+
+    form.state.data = 'not-attached'
 
     if request.method == 'POST' and form.validate():
         cur.execute(
-            'INSERT INTO report (patient, creator_user) VALUES (%s,%s)',
-            (form.patient.data, g.user.username),
+            'INSERT INTO report (patient, creator_user, res, state) VALUES (%s, %s, %s, %s)',
+            (form.patient.data, g.user.username, form.res.data, form.state.data),
         )
         db.commit()
         cur.close()
@@ -59,12 +63,12 @@ def edit(pk: int):
 
     if request.method == 'POST':
         form = CreateReportForm(request.form)
-        fill_form_patients(form)
+        fill_form_choices(form)
 
         if form.validate():
             cur.execute(
-                'UPDATE report SET patient = %s WHERE id=%s',
-                (form.patient.data, pk),
+                'UPDATE report SET patient = %s, res = %s, state = %s WHERE id=%s',
+                (form.patient.data, form.res.data, form.state.data, pk),
             )
             db.commit()
             cur.close()
@@ -75,20 +79,35 @@ def edit(pk: int):
 
     if request.method == 'GET':
         form = CreateReportForm()
-        fill_form_patients(form)
+        fill_form_choices(form)
         form.patient.data = str(report.patient)
+        form.res.data = report.res
+        form.state.data = report.state
 
         cur.close()
         return render_template('report/edit.html', form=form)
 
 
-def fill_form_patients(form: CreateReportForm):
+def fill_form_choices(form: CreateReportForm):
     db = get_db()
     cur = db.cursor()
-
     cur.execute(
         'SELECT * FROM patient',
     )
-
     form.patient.choices = list(map(lambda p: (p.id, p.name), cur.fetchall()))
+    cur.close()
+
+    cur = db.cursor()
+    cur.execute(
+        "SELECT * FROM res where start_t > timestamp %s",
+        (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),),
+    )
+    form.res.choices = list(map(lambda r: (r.id, f'{r.start_t} - {r.end_t}'), cur.fetchall()))
+    cur.close()
+
+    cur = db.cursor()
+    cur.execute(
+        "SELECT * FROM state",
+    )
+    form.state.choices = list(map(lambda s: (s.slug, s.name), cur.fetchall()))
     cur.close()

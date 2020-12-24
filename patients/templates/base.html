@@ -23,7 +23,7 @@
 
 <body>
   <nav>
-    <h1>Reports</h1>
+      <a href="{{ url_for('home.index') }}">Reports Manager</a>
     <ul>
       {% if g.user %}
       <li><span>logged in as {{ g.user['username'] }}</span>

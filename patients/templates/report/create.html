@@ -13,6 +13,7 @@
             <form method="POST">
                 {{ form.hidden_tag() }}
                 {{ render_field(form.patient) }}
+                {{ render_field(form.res) }}
                 <input type="submit" class="btn btn-primary" value="Create">
             </form>
         </div>
