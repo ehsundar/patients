@@ -11,6 +11,7 @@ def index():
         {'name': 'Organizations', 'url': url_for('org.index')},
         {'name': 'Patients', 'url': url_for('patient.index')},
         {'name': 'User', 'url': url_for('user.index')},
-        {'name': 'Reports', 'url': url_for('report.index')}
+        {'name': 'Reports', 'url': url_for('report.index')},
+        {'name': 'Reservations', 'url': url_for('res.index')},
     ]
     return render_template('home/index.html', pages=pages)

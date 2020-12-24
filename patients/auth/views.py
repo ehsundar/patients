@@ -56,8 +56,7 @@ def load_logged_in_user():
         cur.execute(
             'SELECT * FROM users WHERE username = %s', (username,)
         )
-        user = Model(User, cur.fetchone())
-        g.user = user
+        g.user = cur.fetchone()
         cur.close()
 
 

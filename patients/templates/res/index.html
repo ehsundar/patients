@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}All Reservations{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <div class="col-md-12">
+        <a class="btn btn-success" href="{{ url_for('res.create') }}">New Reservation</a>
+        <ul>
+            {% for res in reses %}
+                <li>
+                    <a href="{{ url_for('res.index', pk=res.id) }}">[{{ res.cap }}] - {{ res.start_t }}
+                        to {{ res.end_t }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}
