@@ -25,8 +25,8 @@ def index():
     return render_template('res/index.html', reses=reses)
 
 
-@login_required
 @bp.route('/create', methods=('GET', 'POST'))
+@login_required
 def create():
     db = get_db()
     cur = db.cursor()
@@ -51,8 +51,8 @@ def create():
     return render_template('res/create.html', form=form)
 
 
-@login_required
 @bp.route('/<int:pk>/details', methods=('GET',))
+@login_required
 def details(pk: int):
     db = get_db()
     cur = db.cursor()

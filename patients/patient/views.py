@@ -25,8 +25,8 @@ def index():
     return render_template('patient/index.html', patients=patients)
 
 
-@login_required
 @bp.route('/create', methods=('GET', 'POST'))
+@login_required
 def create():
     db = get_db()
     cur = db.cursor()

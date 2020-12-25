@@ -4,12 +4,14 @@ from flask import (
     Blueprint, render_template, url_for, g
 )
 
+from patients.auth import login_required
 from patients.db import get_db
 
 bp = Blueprint('home', __name__, url_prefix='')
 
 
 @bp.route('/', methods=('GET',))
+@login_required
 def index():
     db = get_db()
     cur = db.cursor()

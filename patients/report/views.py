@@ -35,8 +35,8 @@ def index():
     return render_template('report/index.html', reports=reports, state_picker=state_picker)
 
 
-@login_required
 @bp.route('/create', methods=('GET', 'POST'))
+@login_required
 def create():
     db = get_db()
     cur = db.cursor()

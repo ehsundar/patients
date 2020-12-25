@@ -66,12 +66,11 @@ def logout():
     return redirect(url_for('home.index'))
 
 
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
+def login_required(f):
+    @functools.wraps(f)
+    def decorated_function(*args, **kwargs):
         if g.user is None:
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.login', next=request.url))
+        return f(*args, **kwargs)
 
-        return view(**kwargs)
-
-    return wrapped_view
+    return decorated_function
