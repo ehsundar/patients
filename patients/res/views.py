@@ -17,7 +17,7 @@ def index():
     cur = db.cursor()
 
     cur.execute(
-        'SELECT * FROM res',
+        'SELECT res.*, count(r.id) as occupied_cnt FROM res left join report r on res.id = r.res group by res.id',
     )
     reses = cur.fetchall()
 
