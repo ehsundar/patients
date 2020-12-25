@@ -1,17 +1,39 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Home{% endblock %}</h1>
+    <h1>{% block title %}Home{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
+    <div class="col-6">
+        <ul>
+            {% for page in pages %}
+                <li>
+                    <a href="{{ page.url }}">{{ page.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 
-<ul>
-    {% for page in pages %}
-    <li>
-        <a href="{{ page.url }}">{{page.name}}</a>
-    </li>
-    {% endfor %}
-</ul>
+    <div class="col-6">
+        <h3>Upcoming</h3>
+        <ul>
+            {% for report in reports %}
+                <li>
+                    <a href="{{ url_for('report.edit', pk=report.id) }}">{{ report.name }} at {{ report.start_t }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 
+    <div class="col-6">
+        <h3>From your organization</h3>
+        <ul>
+            {% for report in reports_org %}
+                <li>
+                    <a href="{{ url_for('report.edit', pk=report.id) }}">{{ report.name }} at {{ report.start_t }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}
