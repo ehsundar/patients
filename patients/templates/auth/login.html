@@ -4,18 +4,18 @@
 
 
 {% block header %}
-<h1>{% block title %}Log In{% endblock %}</h1>
+    <h1>{% block title %}Log In{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col">
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            {{ render_field(form.username) }}
-            {{ render_field(form.password) }}
-            <input type="submit" class="btn btn-primary" value="Login">
-        </form>
+    <div class="row">
+        <div class="col-6">
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                {{ render_field(form.username) }}
+                {{ render_field(form.password) }}
+                <input type="submit" class="btn btn-primary" value="Login">
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}
