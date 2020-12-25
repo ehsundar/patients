@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Reservation Details{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <div class="col-md-12">
+        <h3>List of reports for this reservation time span</h3>
+        <p>[{{ res.cap }}] - {{ res.start_t }} to {{ res.end_t }}</p>
+        <ul>
+            {% for report in reports %}
+                <li>
+                    <a href="{{ url_for('report.edit', pk=report.id) }}">{{ report.name }} - {{ report.state }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}

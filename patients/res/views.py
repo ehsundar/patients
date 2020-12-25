@@ -51,6 +51,28 @@ def create():
     return render_template('res/create.html', form=form)
 
 
+@login_required
+@bp.route('/<int:pk>/details', methods=('GET',))
+def details(pk: int):
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute(
+        'select * from res where id = %s',
+        (pk,),
+    )
+    res = cur.fetchone()
+
+    cur.execute(
+        'select p.id as pid, p.name, r.* from report r join patient p on p.id = r.patient where r.res = %s',
+        (pk,),
+    )
+    reports = cur.fetchall()
+
+    cur.close()
+    return render_template('res/details.html', res=res, reports=reports)
+
+
 def fill_form_choices(form: CreateResForm):
     date_choices = []
     for i in range(30):
