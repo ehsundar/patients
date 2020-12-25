@@ -6,7 +6,7 @@ from flask import (
 
 from patients.auth import login_required
 from patients.db import get_db
-from patients.report.forms import CreateReportForm
+from patients.report.forms import CreateReportForm, StatePickerForm
 
 bp = Blueprint('report', __name__, url_prefix='/report')
 
@@ -16,13 +16,23 @@ def index():
     db = get_db()
     cur = db.cursor()
 
-    cur.execute(
-        'SELECT report.id, patient.name FROM report LEFT JOIN patient on patient.id = report.patient',
-    )
+    state = request.args.get('state', None)
+    if state and state != 'all':
+        cur.execute(
+            'SELECT report.id, p.name FROM report JOIN patient p on p.id = report.patient where report.state = %s',
+            (state,),
+        )
+    else:
+        cur.execute(
+            'SELECT report.id, p.name FROM report JOIN patient p on p.id = report.patient',
+        )
     reports = cur.fetchall()
 
     cur.close()
-    return render_template('report/index.html', reports=reports)
+
+    state_picker = StatePickerForm()
+    state_picker.fill_state_choices()
+    return render_template('report/index.html', reports=reports, state_picker=state_picker)
 
 
 @login_required
