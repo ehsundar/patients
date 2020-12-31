@@ -25,7 +25,12 @@ def index():
     ]
 
     cur.execute(
-        'select report.id, p.name, r.start_t from report join patient p on p.id = report.patient join res r on r.id = report.res where r.start_t > timestamp %s limit 15',
+        '''
+        select report.id, p.name, r.start_t from report
+        join patient p on p.id = report.patient 
+        join res r on r.id = report.res 
+        where r.start_t > timestamp %s 
+        limit 15''',
         (datetime.now(),),
     )
     reports = cur.fetchall()
