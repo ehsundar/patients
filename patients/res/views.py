@@ -17,7 +17,7 @@ def index():
     cur = db.cursor()
 
     cur.execute(
-        'SELECT res.*, count(r.id) as occupied_cnt FROM res left join report r on res.id = r.res group by res.id',
+        'select res.*, count(r.id) as occupied_cnt from res left join report r on res.id = r.res group by res.id',
     )
     reses = cur.fetchall()
 
@@ -40,7 +40,7 @@ def create():
         d_end += timedelta(hours=int(form.end_time.data))
 
         cur.execute(
-            'INSERT INTO res (start_t, end_t, cap) VALUES (%s, %s, %s)',
+            'insert into res (start_t, end_t, cap) values (%s, %s, %s)',
             (d_start, d_end, form.cap.data),
         )
         db.commit()

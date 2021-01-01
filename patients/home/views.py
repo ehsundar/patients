@@ -30,10 +30,10 @@ def index():
         join patient p on p.id = report.patient 
         join res r on r.id = report.res 
         where r.start_t > timestamp %s 
-        limit 15''',
+        limit 5''',
         (datetime.now(),),
     )
-    reports = cur.fetchall()
+    reports_upcoming = cur.fetchall()
 
     cur.execute(
         '''
@@ -41,7 +41,7 @@ def index():
         join patient p on p.id = report.patient join res r on r.id = report.res 
         where r.start_t > timestamp %s and report.creator_user in 
             (select username from users where org = %s)
-        order by r.start_t 
+        order by r.start_t desc
         limit 5
         ''',
         (datetime.now(), g.user.org),
@@ -49,4 +49,4 @@ def index():
     reports_org = cur.fetchall()
 
     cur.close()
-    return render_template('home/index.html', pages=pages, reports=reports, reports_org=reports_org)
+    return render_template('home/index.html', pages=pages, reports=reports_upcoming, reports_org=reports_org)

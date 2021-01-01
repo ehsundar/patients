@@ -16,6 +16,8 @@
                                 <a href="{{ url_for('report.edit', pk=report.id) }}">{{ report.name }}
                                     at {{ report.start_t }}</a>
                             </li>
+                        {% else %}
+                            <p>No reports</p>
                         {% endfor %}
                     </ul>
                 </div>
@@ -28,6 +30,8 @@
                                 <a href="{{ url_for('report.edit', pk=report.id) }}">{{ report.name }}
                                     at {{ report.start_t }}</a>
                             </li>
+                        {% else %}
+                            <p>No reports</p>
                         {% endfor %}
                     </ul>
                 </div>

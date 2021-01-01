@@ -19,12 +19,12 @@ def index():
     state = request.args.get('state', None)
     if state and state != 'all':
         cur.execute(
-            'SELECT report.id, p.name FROM report JOIN patient p on p.id = report.patient where report.state = %s',
+            'select report.id, p.name from report join patient p on p.id = report.patient where report.state = %s',
             (state,),
         )
     else:
         cur.execute(
-            'SELECT report.id, p.name FROM report JOIN patient p on p.id = report.patient',
+            'select report.id, p.name from report join patient p on p.id = report.patient',
         )
     reports = cur.fetchall()
 
@@ -47,7 +47,7 @@ def create():
 
     if request.method == 'POST' and form.validate():
         cur.execute(
-            'INSERT INTO report (patient, creator_user, res, state) VALUES (%s, %s, %s, %s)',
+            'insert into report (patient, creator_user, res, state) values (%s, %s, %s, %s)',
             (form.patient.data, g.user.username, form.res.data, form.state.data),
         )
         db.commit()
@@ -64,7 +64,7 @@ def edit(pk: int):
     cur = db.cursor()
 
     cur.execute(
-        'SELECT * FROM report WHERE id=%s',
+        'select * from report where id=%s',
         (pk,),
     )
     report = cur.fetchone()
@@ -77,7 +77,7 @@ def edit(pk: int):
 
         if form.validate():
             cur.execute(
-                'UPDATE report SET patient = %s, res = %s, state = %s WHERE id=%s',
+                'update report set patient = %s, res = %s, state = %s where id=%s',
                 (form.patient.data, form.res.data, form.state.data, pk),
             )
             db.commit()

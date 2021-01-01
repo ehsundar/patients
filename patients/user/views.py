@@ -17,7 +17,7 @@ def index():
     cur = db.cursor()
 
     cur.execute(
-        'SELECT * FROM users',
+        'select * from users',
     )
     users = cur.fetchall()
     users = list(map(lambda row: Model(User, row), users))
@@ -43,7 +43,7 @@ def create_post():
 
     if form.validate():
         cur.execute(
-            'SELECT * FROM users WHERE username=%s',
+            'select * from users where username=%s',
             (form.username.data,)
         )
         user = cur.fetchone()
@@ -54,7 +54,7 @@ def create_post():
             return render_template('user/create.html', form=form)
 
         cur.execute(
-            'INSERT INTO users (username, password, org) VALUES (%s, %s, %s)',
+            'insert into users (username, password, org) values (%s, %s, %s)',
             (form.username.data, generate_password_hash(form.password.data), form.org.data)
         )
         db.commit()
@@ -101,7 +101,7 @@ def edit_post(username: str):
     err = None
 
     cur.execute(
-        'SELECT * FROM users WHERE username=%s',
+        'select * from users where username=%s',
         (username,)
     )
     user = cur.fetchone()
@@ -111,7 +111,7 @@ def edit_post(username: str):
     new_password = request.form['password']
 
     cur.execute(
-        'UPDATE users SET password = %s WHERE username=%s',
+        'update users set password = %s where username=%s',
         (generate_password_hash(new_password), username)
     )
     db.commit()
@@ -125,12 +125,12 @@ def fill_form_org_and_perms(form: CreateUserForm):
     cur = db.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
 
     cur.execute(
-        'SELECT * FROM org',
+        'select * from org',
     )
     orgs = cur.fetchall()
 
     cur.execute(
-        'SELECT * FROM perm',
+        'select * from perm',
     )
     perms = cur.fetchall()
 

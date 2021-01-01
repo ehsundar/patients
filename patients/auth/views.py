@@ -23,7 +23,7 @@ def login():
             return render_template('auth/login.html', form=form)
 
         cur.execute(
-            'SELECT * FROM users WHERE username = %s',
+            'select * from users where username = %s',
             (form.username.data,)
         )
         user = cur.fetchone()
@@ -54,7 +54,7 @@ def load_logged_in_user():
         conn = get_db()
         cur = conn.cursor()
         cur.execute(
-            'SELECT * FROM users WHERE username = %s', (username,)
+            'select * from users where username = %s', (username,)
         )
         g.user = cur.fetchone()
         cur.close()

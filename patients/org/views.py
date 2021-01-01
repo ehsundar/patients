@@ -15,7 +15,7 @@ def index():
     cur = db.cursor()
 
     cur.execute(
-        'SELECT * FROM org',
+        'select * from org',
     )
     orgs = cur.fetchall()
     orgs = list(map(lambda row: Model(Org, row), orgs))
@@ -33,7 +33,7 @@ def create():
     if request.method == 'POST':
         if form.validate():
             cur.execute(
-                'SELECT * FROM org WHERE slug=%s',
+                'select * from org where slug=%s',
                 (form.slug.data,),
             )
             org = cur.fetchone()
@@ -42,7 +42,7 @@ def create():
                 form.slug.errors.append(f'org {form.slug.data} already exists')
             else:
                 cur.execute(
-                    'INSERT INTO org (slug, name) VALUES (%s, %s)',
+                    'insert into org (slug, name) values (%s, %s)',
                     (form.slug.data, form.name.data),
                 )
                 conn.commit()
@@ -59,7 +59,7 @@ def edit(slug: str):
     cur = db.cursor()
 
     cur.execute(
-        'SELECT * FROM org WHERE slug=%s',
+        'select * from org where slug=%s',
         (slug,),
     )
     org = cur.fetchone()
@@ -73,7 +73,7 @@ def edit(slug: str):
 
         if form.validate():
             cur.execute(
-                'UPDATE org SET name = %s WHERE slug = %s',
+                'update org set name = %s where slug = %s',
                 (form.name.data, slug),
             )
             db.commit()

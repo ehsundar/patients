@@ -16,7 +16,7 @@ def index():
     cur = db.cursor()
 
     cur.execute(
-        'SELECT * FROM patient',
+        'select * from patient',
     )
     patients = cur.fetchall()
     patients = list(map(lambda row: Model(Patient, row), patients))
@@ -34,7 +34,7 @@ def create():
 
     if request.method == 'POST' and form.validate():
         cur.execute(
-            'INSERT INTO patient (phone, name, gender, creator_user) VALUES (%s,%s,%s,%s)',
+            'insert into patient (phone, name, gender, creator_user) values (%s,%s,%s,%s)',
             (form.phone.data, form.name.data, form.gender.data, g.user.username),
         )
         db.commit()
@@ -51,7 +51,7 @@ def edit(pk: int):
     cur = db.cursor()
 
     cur.execute(
-        'SELECT * FROM patient WHERE id=%s',
+        'select * from patient where id=%s',
         (pk,),
     )
     patient = cur.fetchone()
@@ -65,7 +65,7 @@ def edit(pk: int):
 
         if form.validate():
             cur.execute(
-                'UPDATE patient SET phone = %s, name = %s, gender = %s WHERE id=%s',
+                'update patient set phone = %s, name = %s, gender = %s where id=%s',
                 (form.phone.data, form.name.data, form.gender.data, pk),
             )
             db.commit()
