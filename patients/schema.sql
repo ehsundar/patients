@@ -87,3 +87,17 @@ CREATE TABLE report
     FOREIGN KEY (res) REFERENCES res (id),
     FOREIGN KEY (state) REFERENCES state (slug)
 );
+
+DROP TABLE IF EXISTS state_log CASCADE;
+CREATE TABLE state_log
+(
+    id         SERIAL PRIMARY KEY,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    report     INTEGER,
+    state_old  VARCHAR(32),
+    state_new  VARCHAR(32),
+    FOREIGN KEY (report) REFERENCES report (id),
+    FOREIGN KEY (state_old) REFERENCES state (slug),
+    FOREIGN KEY (state_old) REFERENCES state (slug)
+);
